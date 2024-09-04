@@ -171,7 +171,7 @@ server <- function(input, output, session) {
   
   
   # Create reactive plot
-  output$viz_plot <- renderPlotly({
+  output$pool_level_viz <- renderPlotly({
     req(input$viz_location_pool_id, input$viz_plot_type)
     
     if(input$viz_plot_type == "Water Level") {

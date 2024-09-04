@@ -25,8 +25,8 @@ library(BAMMtools)  # for getJenksBreaks function
 ## ==============================
 
 sass(
-  input = sass_file(here("shinydashboard", "www", "sass-styles.scss")),
-  output = here("shinydashboard", "www", "sass-styles.css"),
+  input = sass_file(here("www", "sass-styles.scss")),
+  output = here("www", "sass-styles.css"),
   
   # OPTIONAL, but speeds up page load time by removing white-space & line-breaks that make css files more human-readable
   options = sass_options(output_style = "compressed"))
@@ -36,7 +36,7 @@ sass(
 ## ==============================
 
 # store data file path
-data_path <- here("shinydashboard", "data")
+data_path <- here("data")
 
 vernal_polygon <- st_read(here(data_path, "vernal_pools_monitored", "vernal_pools_monitored.shp")) %>% 
   rename(location = locatin,
