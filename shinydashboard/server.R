@@ -1,10 +1,16 @@
 server <- function(input, output, session) {
   
+  # ==================================================================================
+  #                                Vernal Pool Map                                ----
+  # ==================================================================================
+  
   # Define the reactive value
   selected_polygon <- reactiveVal(NULL)
   
   # Define color palette
-  status_colors <- c("Active Monitoring" = "blue", "Non-Active Monitoring" = "orange", "Unknown" = "gray")
+  status_colors <- c("Active Monitoring" = "blue", 
+                     "Non-Active Monitoring" = "orange", 
+                     "Unknown" = "gray")
   
   legend_colors <- c("blue", "orange")
   legend_labels <- c("Active Monitoring", "Non-Active Monitoring")
@@ -24,7 +30,7 @@ server <- function(input, output, session) {
     print("Mapped colors:")
     print(unique(colors))
     return(colors)
-  }
+  } # END colorMapping function
   
   output$map <- renderLeaflet({
     print("Rendering initial map")
@@ -72,7 +78,7 @@ server <- function(input, output, session) {
                 labels = legend_labels,
                 title = "Research Status",
                 opacity = 1)
-  })
+  }) # END renderLeaflet for pool map
   
   # Reactive function for filtered data
   filtered_data <- reactive({
@@ -116,7 +122,7 @@ server <- function(input, output, session) {
     
     print(paste("Filtered data rows:", nrow(data)))
     data
-  })
+  }) # END reactive filtered data
   
   # Update the map
   observe({
@@ -164,21 +170,22 @@ server <- function(input, output, session) {
       )
   })
   
-  # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  #                                 DATAVIZ reaction
-  # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  # ==================================================================================
+  #                               Pool Level Visualizations                       ----
+  # ==================================================================================
   
-  
-  
-  # Create reactive plot
   output$pool_level_viz <- renderPlotly({
-    req(input$viz_location_pool_id, input$viz_plot_type)
     
-    if(input$viz_plot_type == "Water Level") {
+    
+    ## ................................ Water Level Plot ..........................
+    if (input$p_viz_type == "Water Level") {
+      
       p <- hydro %>%
-        filter(location_pool_id == input$viz_location_pool_id & water_year == input$viz_water_year) %>%
+        filter(location_pool_id == input$p_viz_location_pool_id & 
+                 water_year == input$p_viz_water_year) %>%
         ggplot(aes(x = date, y = water_level_in)) +
         geom_line(col = "dodgerblue", size = 1) +
+        geom_point(col = "dodgerblue") +
         scale_x_date(date_breaks = "2 weeks", date_labels = "%m-%d") + 
         labs(x = "Date", 
              y = "Water Level (in)", 
@@ -186,14 +193,18 @@ server <- function(input, output, session) {
         theme_classic()
       
       
-    } else if(input$viz_plot_type == "Species Abundance") {
+      ## ........................... Species Abundance Plot .........................
+    } else {
       
+      # filter to remove NAs & select location_pool_id 
       species_abundance <- percent_cover %>%
-        filter(location_pool_id == input$viz_location_pool_id & complete.cases(species) & species != "unlisted") %>%
+        filter(location_pool_id == input$p_viz_location_pool_id & complete.cases(species) & 
+                 species != "unlisted") %>%
         group_by(species, type) %>%
         summarise(percent_cover = sum(percent_cover, na.rm = TRUE)) %>% 
         filter(type %in% c("Non-Native", "Native"))
       
+      # store species abundance plot
       p <- species_abundance %>%
         ggplot(aes(reorder(species, percent_cover), percent_cover, fill = type)) +
         geom_col() +
@@ -206,35 +217,67 @@ server <- function(input, output, session) {
         theme_minimal() +
         theme(plot.title = element_text(size = 16, hjust = 0.5, vjust = 1)) +
         #expand_limits(y = max(species_abundance$percent_cover) + 5) +
-        coord_flip()
+        coord_flip()  
       
-    } else if(input$viz_plot_type %in% c("Native Cover", "Non-Native Cover", "Species Cover")) {
-      y_var <- switch(input$viz_plot_type,
-                      "Native Cover" = "sum_of_native_cover_automatically_calculated",
-                      "Non-Native Cover" = "sum_of_non_native_cover_automatically_calculated",
-                      "Species Cover" = "percent_cover")
+    }
+    
+    ## ........................... Output Selected Plot ...........................
+    
+    ggplotly(p)
+    
+  }) # END renderPlotly plot-level viz
+  
+  
+  # ==================================================================================
+  #                             Transect Level Visualizations                     ----
+  # ==================================================================================
+  
+  output$transect_level_viz <- renderPlotly({
+    
+    y_var <- switch(input$tr_viz_type,
+                    "Sum of Native Cover" = "sum_of_native_cover_automatically_calculated",
+                    "Count of Native Species" = "count_of_native_species_automatically_calculated",
+                    "Sum of Non-Native Cover" = "sum_of_non_native_cover_automatically_calculated",
+                    "Count of Non-Native Species" = "count_of_non_native_species_automatically_calculated",
+                    "Percent Thatch" = "percent_thatch",
+                    "Percent Bare Ground" = "percent_bare_ground",
+                    "Percent Cover Single Species" = "percent_cover")
+    
+    
+    if (y_var != "Percent Cover Single Species") {
       
       df <- percent_cover %>%
-        filter(location_pool_id == input$viz_location_pool_id)
+        filter(location_pool_id == input$tr_viz_location_pool_id &
+                 transect_axis == input$tr_viz_quadrat)
       
-      if(input$viz_plot_type == "Species Cover") {
-        df <- df %>% filter(species == input$viz_species)
-      }
-      
-      p <- ggplot(df, aes_string("transect_distance_of_quadrat", y_var)) +
+      tr_p <- ggplot(df, aes_string("transect_distance_of_quadrat", y_var)) +
         geom_point() +
         geom_smooth(se = FALSE) +
         theme_minimal() +
         labs(x = "Transect Distance of Quadrat",
-             y = input$viz_plot_type,
-             title = paste(input$viz_plot_type, "by Transect Distance"))
+             y = input$tr_viz_type)
       
-    }
+    } else {
+      
+      df <- percent_cover %>%
+        filter(location_pool_id == input$tr_viz_location_pool_id &
+                 transect_axis == input$tr_viz_quadrat &
+                 species == input$tr_viz_species)
+      
+      tr_p <- ggplot(df, aes_string("transect_distance_of_quadrat", y_var)) +
+        geom_point() +
+        geom_smooth(se = FALSE) +
+        theme_minimal() +
+        labs(x = "Transect Distance of Quadrat",
+             y = input$viz_plot_type)
+      
+    } # END ifelse for transect-level plot (single species)
     
-    ggplotly(p)
-  })
-  
-  
+    
+    ggplotly(tr_p)
+    
+    
+  }) # END renderPlotly transect-level viz
   
   
   

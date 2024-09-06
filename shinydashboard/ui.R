@@ -141,17 +141,17 @@ body <- dashboardBody(
                     
                     # pool-level viz filters ----
                     column(width = 4,
-                           selectizeInput("viz_location_pool_id", "Select Location-Pool ID:",
+                           selectizeInput("p_viz_location_pool_id", "Select Location-Pool ID:",
                                           choices = sort(unique(c(hydro$location_pool_id, 
                                                                   percent_cover$location_pool_id))),
                                           multiple = FALSE)),
                     column(width = 4,
-                           selectizeInput("viz_plot_type", "Select Visualization:",
+                           selectizeInput("p_viz_type", "Select Visualization:",
                                           choices = c("Water Level", 
                                                       "Species Abundance"),
                                           multiple = FALSE)),
                     column(width = 4,
-                           selectizeInput("viz_water_year", "Select Water Year:",
+                           selectizeInput("p_viz_water_year", "Select Water Year:",
                                           choices = unique(hydro$water_year),
                                           multiple = FALSE)),
                     
@@ -166,20 +166,37 @@ body <- dashboardBody(
             
             #Transect-level data visualizations ----
             fluidRow(
-              box(width = 9,
+              box(width = 10,
                   title = strong("Transect-Level Visualizations"),
                   fluidRow(
-                    column(width = 4,
-                           selectizeInput("viz_location_pool_id", "Select Location-Pool ID:",
-                                          choices = unique(c(hydro$location_pool_id,
+                    
+                    # transect-level viz filters
+                    column(width = 3,
+                           selectizeInput("tr_viz_location_pool_id", "Select Location-Pool ID:",
+                                          choices = unique(c(hydro$location_pool_id, 
                                                              percent_cover$location_pool_id)),
                                           multiple = FALSE)),
                     
-                    column(width = 3, 
-                           selectizeInput("viz_transect", "Select Quadrat:",
+                    column(width = 2, 
+                           selectizeInput("tr_viz_quadrat", "Select Quadrat:",
                                           choices = sort(unique(percent_cover$transect_axis)),
-                                          multiple = FALSE))
+                                          multiple = FALSE)),
                     
+                    column(width = 3,
+                           selectizeInput("tr_viz_type", "Select Plot:",
+                                          choices = c("Sum of Native Cover", "Count of Native Species",
+                                                      "Sum of Non-Native Cover", "Count of Non-Native Species",
+                                                      "Percent Thatch", "Percent Bare Ground",
+                                                      "Percent Cover Single Species"),
+                                          multiple = FALSE)),
+                    
+                    column(width = 3,
+                           selectizeInput("tr_viz_species", "Select Species:",
+                                          choices = sort(unique(percent_cover$species)),
+                                          multiple = FALSE)),
+                    
+                    column(width = 10,
+                           plotlyOutput("transect_level_viz"))
                     
                   )
               )
