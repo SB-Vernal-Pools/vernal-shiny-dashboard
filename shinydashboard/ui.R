@@ -166,23 +166,23 @@ body <- dashboardBody(
             
             #Transect-level data visualizations ----
             fluidRow(
-              box(width = 10,
+              box(width = 8,
                   title = strong("Transect-Level Visualizations"),
                   fluidRow(
                     
                     # transect-level viz filters
-                    column(width = 3,
+                    column(width = 6,
                            selectizeInput("tr_viz_location_pool_id", "Select Location-Pool ID:",
-                                          choices = unique(c(hydro$location_pool_id, 
-                                                             percent_cover$location_pool_id)),
+                                          choices = sort(unique(c(hydro$location_pool_id, 
+                                                                  percent_cover$location_pool_id))),
                                           multiple = FALSE)),
                     
-                    column(width = 2, 
+                    column(width = 6, 
                            selectizeInput("tr_viz_quadrat", "Select Quadrat:",
                                           choices = sort(unique(percent_cover$transect_axis)),
                                           multiple = FALSE)),
                     
-                    column(width = 3,
+                    column(width = 6,
                            selectizeInput("tr_viz_type", "Select Plot:",
                                           choices = c("Sum of Native Cover", "Count of Native Species",
                                                       "Sum of Non-Native Cover", "Count of Non-Native Species",
@@ -190,20 +190,19 @@ body <- dashboardBody(
                                                       "Percent Cover Single Species"),
                                           multiple = FALSE)),
                     
-                    column(width = 3,
+                    column(width = 6,
                            selectizeInput("tr_viz_species", "Select Species:",
-                                          choices = sort(unique(percent_cover$species)),
-                                          multiple = FALSE)),
-                    
-                    column(width = 10,
-                           plotlyOutput("transect_level_viz"))
-                    
-                  )
+                                          choices = NULL),
+                           multiple = FALSE)),
+                  
+                  column(width = 12,
+                         plotlyOutput("transect_level_viz"))
+                  
               )
-              
-            ) # END transect-level fluidRow
-    ) 
-  )
+            )
+            
+    ) # END transect-level fluidRow
+  ) 
 )
 
 #================================================================

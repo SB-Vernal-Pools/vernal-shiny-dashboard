@@ -232,6 +232,21 @@ server <- function(input, output, session) {
   #                             Transect Level Visualizations                     ----
   # ==================================================================================
   
+  # filter species available depending on input&tr_location_pool_id
+  observe({
+    
+    filtered_species <- percent_cover %>% 
+      filter(location_pool_id == input$tr_viz_location_pool_id &
+               transect_axis == input$tr_viz_quadrat)
+    
+    filtered_species <- sort(unique(filtered_species$species))
+    
+    updateSelectizeInput(session, "tr_viz_species",
+                         choices = filtered_species)
+  }) #END observe for single species input
+  
+  
+  
   output$transect_level_viz <- renderPlotly({
     
     y_var <- switch(input$tr_viz_type,
@@ -244,7 +259,22 @@ server <- function(input, output, session) {
                     "Percent Cover Single Species" = "percent_cover")
     
     
-    if (y_var != "Percent Cover Single Species") {
+    if (y_var == "percent_cover") {
+      
+      # Use reactive data frame for species filtering
+      df <- percent_cover %>%
+        filter(location_pool_id == input$tr_viz_location_pool_id &
+                 transect_axis == input$tr_viz_quadrat &
+                 species == input$tr_viz_species)
+      
+      tr_p <- ggplot(df, aes_string("transect_distance_of_quadrat", y_var)) +
+        geom_point() +
+        geom_smooth(se = FALSE) +
+        theme_minimal() +
+        labs(x = "Transect Distance of Quadrat",
+             y = input$viz_plot_type)
+      
+    } else {
       
       df <- percent_cover %>%
         filter(location_pool_id == input$tr_viz_location_pool_id &
@@ -257,19 +287,6 @@ server <- function(input, output, session) {
         labs(x = "Transect Distance of Quadrat",
              y = input$tr_viz_type)
       
-    } else {
-      
-      df <- percent_cover %>%
-        filter(location_pool_id == input$tr_viz_location_pool_id &
-                 transect_axis == input$tr_viz_quadrat &
-                 species == input$tr_viz_species)
-      
-      tr_p <- ggplot(df, aes_string("transect_distance_of_quadrat", y_var)) +
-        geom_point() +
-        geom_smooth(se = FALSE) +
-        theme_minimal() +
-        labs(x = "Transect Distance of Quadrat",
-             y = input$viz_plot_type)
       
     } # END ifelse for transect-level plot (single species)
     
