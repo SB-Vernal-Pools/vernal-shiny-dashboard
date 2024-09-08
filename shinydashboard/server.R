@@ -297,5 +297,21 @@ server <- function(input, output, session) {
   }) # END renderPlotly transect-level viz
   
   
+  # Species text output ----
+  
+  output$tr_spp_text <- renderUI({
+    
+    spp_name <- as.character(input$tr_viz_species)
+    
+    df_single_spp <- percent_cover %>%
+      filter(location_pool_id == input$tr_viz_location_pool_id &
+               transect_axis == input$tr_viz_quadrat &
+               species == input$tr_viz_species)
+    
+    spp_link <- unique(df_single_spp$spp_cal_flora)
+    
+    markdown(paste0('<a href="', spp_link, '" target="_blank">', input$tr_viz_species, '</a>'))
+    
+    })
   
 }

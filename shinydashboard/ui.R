@@ -198,11 +198,18 @@ body <- dashboardBody(
                   column(width = 12,
                          plotlyOutput("transect_level_viz"))
                   
-              )
-            )
+              ),
+              
+              # Images/info box on viz page ----
+              box(width = 4,
+                  title = strong("Additional Information"),
+                  includeMarkdown("text/additional-info.md"),
+                  uiOutput("tr_spp_text"))
+              
+            ) # END transect-level fluidRow
             
-    ) # END transect-level fluidRow
-  ) 
+            ) 
+  )
 )
 
 #================================================================
