@@ -202,13 +202,15 @@ body <- dashboardBody(
               
               # Images/info box on viz page ----
               box(width = 4,
+                  height = 612,
                   title = strong("Additional Information"),
                   includeMarkdown("text/additional-info.md"),
+                  imageOutput("tr_spp_image"),
                   uiOutput("tr_spp_text"))
               
             ) # END transect-level fluidRow
             
-            ) 
+    ) 
   )
 )
 

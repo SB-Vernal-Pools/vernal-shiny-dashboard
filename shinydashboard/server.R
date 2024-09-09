@@ -297,7 +297,7 @@ server <- function(input, output, session) {
   }) # END renderPlotly transect-level viz
   
   
-  # Species text output ----
+  # Species link output ----
   
   output$tr_spp_text <- renderUI({
     
@@ -310,8 +310,29 @@ server <- function(input, output, session) {
     
     spp_link <- unique(df_single_spp$spp_cal_flora)
     
-    markdown(paste0('<a href="', spp_link, '" target="_blank">', input$tr_viz_species, '</a>'))
+    HTML(paste0('<div style="text-align: center;">',
+                '<a href="', spp_link, '" target="_blank">', spp_name, '</a><br>'))
     
-    })
+  }) #END renderUI for Calflora page
   
+  
+  # Species image output ----
+  
+  output$tr_spp_image <- renderImage({
+    spp_name <- as.character(input$tr_viz_species)
+    spp_name <- gsub(" ", "_", spp_name)
+    
+    # Specify the path to the image file
+    image_path <- here("images", paste0(spp_name, ".jpg"))
+    
+    # Return a list with the image path and other attributes
+    list(src = image_path,
+         alt = spp_name,
+         contentType = 'image/jpeg',
+         width = "80%",
+         height = "85%",
+         style="display: block; margin-left: auto; margin-right: auto;")
+  }, deleteFile = FALSE) 
+  
+
 }
