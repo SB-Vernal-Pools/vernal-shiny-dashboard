@@ -125,7 +125,7 @@ body <- dashboardBody(
               box(width = 12,
                   title = strong("How to Use the Data Visualization Tab"),
                   collapsible = TRUE,
-                  #includeMarkdown("text/how-to-data-viz.md")
+                  includeMarkdown("text/how-to-data-viz.md")
               )), #END how-to fluidRow
             
             

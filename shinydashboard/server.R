@@ -330,7 +330,7 @@ server <- function(input, output, session) {
          alt = spp_name,
          contentType = 'image/jpeg',
          width = "80%",
-         height = "85%",
+         height = "95%",
          style="display: block; margin-left: auto; margin-right: auto;")
   }, deleteFile = FALSE) 
   
