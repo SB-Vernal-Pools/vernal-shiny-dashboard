@@ -1,1 +1,1 @@
-To view additional images and information on the selected plant species, visit the associated Calflora page using the link below: 
+To view additional images and information on the selected species, visit the associated Calflora page using the link below: 

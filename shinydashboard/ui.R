@@ -146,7 +146,7 @@ body <- dashboardBody(
                                                                   percent_cover$location_pool_id))),
                                           multiple = FALSE)),
                     column(width = 4,
-                           selectizeInput("p_viz_type", "Select Visualization:",
+                           selectizeInput("p_viz_type", "Select Metric:",
                                           choices = c("Water Level", 
                                                       "Species Abundance"),
                                           multiple = FALSE)),
@@ -170,7 +170,7 @@ body <- dashboardBody(
                   title = strong("Transect-Level Visualizations"),
                   fluidRow(
                     
-                    # transect-level viz filters
+                    # Transect-level viz filters
                     column(width = 6,
                            selectizeInput("tr_viz_location_pool_id", "Select Location-Pool ID:",
                                           choices = sort(unique(c(hydro$location_pool_id, 
@@ -178,27 +178,37 @@ body <- dashboardBody(
                                           multiple = FALSE)),
                     
                     column(width = 6, 
-                           selectizeInput("tr_viz_quadrat", "Select Quadrat:",
+                           selectizeInput("tr_viz_quadrat", "Select Transect:",
                                           choices = sort(unique(percent_cover$transect_axis)),
                                           multiple = FALSE)),
                     
                     column(width = 6,
-                           selectizeInput("tr_viz_type", "Select Plot:",
-                                          choices = c("Sum of Native Cover", "Count of Native Species",
-                                                      "Sum of Non-Native Cover", "Count of Non-Native Species",
-                                                      "Percent Thatch", "Percent Bare Ground",
+                           selectizeInput("tr_viz_type", "Select Metric:",
+                                          choices = c("Sum of Native Cover",
+                                                      "Count of Native Species",
+                                                      "Sum of Non-Native Cover", 
+                                                      "Count of Non-Native Species",
+                                                      "Percent Thatch", 
+                                                      "Percent Bare Ground",
                                                       "Percent Cover Single Species"),
                                           multiple = FALSE)),
                     
+                    # spp filter only appears when "Percent Cover Single Species" selected
+                    
                     column(width = 6,
-                           selectizeInput("tr_viz_species", "Select Species:",
-                                          choices = NULL),
-                           multiple = FALSE)),
+                           conditionalPanel(
+                             condition = "input.tr_viz_type == 'Percent Cover Single Species'", 
+                             selectizeInput("tr_viz_species", "Select Species:",
+                                            choices = NULL,
+                                            multiple = FALSE))),
+                    
+                    # transect-level visualization output 
+                    column(width = 12,
+                           plotlyOutput("transect_level_viz"))
+                    
+                  ) # END Transect viz fluidRow
                   
-                  column(width = 12,
-                         plotlyOutput("transect_level_viz"))
-                  
-              ),
+              ), # END transect-level visualization box
               
               # Images/info box on viz page ----
               box(width = 4,
@@ -206,9 +216,9 @@ body <- dashboardBody(
                   title = strong("Additional Information"),
                   includeMarkdown("text/additional-info.md"),
                   imageOutput("tr_spp_image"),
-                  uiOutput("tr_spp_text"))
-              
-            ) # END transect-level fluidRow
+                  uiOutput("tr_spp_text")
+              )
+            ) # END main fluidRow
             
     ) 
   )

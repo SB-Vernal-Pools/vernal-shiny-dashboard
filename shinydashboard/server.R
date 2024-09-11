@@ -229,7 +229,7 @@ server <- function(input, output, session) {
   
   
   # ==================================================================================
-  #                             Transect Level Visualizations                     ----
+  #                             Quadrat Level Visualizations                     ----
   # ==================================================================================
   
   # filter species available depending on input&tr_location_pool_id
@@ -268,8 +268,9 @@ server <- function(input, output, session) {
                  species == input$tr_viz_species)
       
       tr_p <- ggplot(df, aes_string("transect_distance_of_quadrat", y_var)) +
+        # geom_smooth(se=FALSE) +
+        geom_line(alpha = 0.4, col = "blue") +
         geom_point() +
-        geom_smooth(se = FALSE) +
         theme_minimal() +
         labs(x = "Transect Distance of Quadrat",
              y = input$viz_plot_type)
@@ -281,8 +282,9 @@ server <- function(input, output, session) {
                  transect_axis == input$tr_viz_quadrat)
       
       tr_p <- ggplot(df, aes_string("transect_distance_of_quadrat", y_var)) +
+        # geom_smooth(se=FALSE) +
+        geom_line(alpha = 0.4, col = "blue") +
         geom_point() +
-        geom_smooth(se = FALSE) +
         theme_minimal() +
         labs(x = "Transect Distance of Quadrat",
              y = input$tr_viz_type)
@@ -311,7 +313,9 @@ server <- function(input, output, session) {
     spp_link <- unique(df_single_spp$spp_cal_flora)
     
     HTML(paste0('<div style="text-align: center;">',
-                '<a href="', spp_link, '" target="_blank">', spp_name, '</a><br>'))
+                '<strong>Calflora Link: </strong> ',
+                '<a href="', spp_link, '" target="_blank">', spp_name, '</a><br>',
+                '</div>'))
     
   }) #END renderUI for Calflora page
   
@@ -334,5 +338,5 @@ server <- function(input, output, session) {
          style="display: block; margin-left: auto; margin-right: auto;")
   }, deleteFile = FALSE) 
   
-
+  
 }
