@@ -174,35 +174,41 @@ server <- function(input, output, session) {
   #                               Pool Level Visualizations                       ----
   # ==================================================================================
   
-  output$pool_level_viz <- renderPlotly({
+  
+  ## ................................ Water Level Plot ..........................
+  
+  output$water_level_viz <- renderPlotly({  
     
+    p <- hydro %>%
+      filter(location_pool_id == input$p_viz_location_pool_id & 
+               water_year == input$p_viz_water_year) %>%
+      ggplot(aes(x = date, y = water_level_in)) +
+      geom_line(col = "dodgerblue", size = 1) +
+      geom_point(col = "dodgerblue") +
+      scale_x_date(date_breaks = "2 weeks", date_labels = "%m-%d") + 
+      labs(x = "Date", 
+           y = "Water Level (in)", 
+           title = "Weekly Water Level") +
+      theme_classic() +
+      theme(plot.title = element_text(size = 16, hjust = 0.5)) 
     
-    ## ................................ Water Level Plot ..........................
-    if (input$p_viz_type == "Water Level") {
+    ggplotly(p)
+    
+  }) #END water level plot renderPlotly
+  
+  
+  ## ........................... Species Abundance Plot .........................
+  
+  output$spp_abundance_viz <- renderPlotly({
+    
+    # filter to remove NAs & select location_pool_id 
+    species_abundance <- percent_cover %>%
+      filter(location_pool_id == input$p_viz_location_pool_id & complete.cases(species)) %>% 
+      filter(species != "unlisted") %>% 
+      group_by(species, type) %>%
+      summarise(percent_cover = sum(percent_cover, na.rm = TRUE)/100) %>% 
+      filter(type %in% c("Non-Native", "Native"))
       
-      p <- hydro %>%
-        filter(location_pool_id == input$p_viz_location_pool_id & 
-                 water_year == input$p_viz_water_year) %>%
-        ggplot(aes(x = date, y = water_level_in)) +
-        geom_line(col = "dodgerblue", size = 1) +
-        geom_point(col = "dodgerblue") +
-        scale_x_date(date_breaks = "2 weeks", date_labels = "%m-%d") + 
-        labs(x = "Date", 
-             y = "Water Level (in)", 
-             title = "Weekly Water Level") +
-        theme_classic()
-      
-      
-      ## ........................... Species Abundance Plot .........................
-    } else {
-      
-      # filter to remove NAs & select location_pool_id 
-      species_abundance <- percent_cover %>%
-        filter(location_pool_id == input$p_viz_location_pool_id & complete.cases(species) & 
-                 species != "unlisted") %>%
-        group_by(species, type) %>%
-        summarise(percent_cover = sum(percent_cover, na.rm = TRUE)) %>% 
-        filter(type %in% c("Non-Native", "Native"))
       
       # store species abundance plot
       p <- species_abundance %>%
@@ -210,22 +216,17 @@ server <- function(input, output, session) {
         geom_col() +
         #geom_text(aes(label = percent_cover), size = 3, hjust = -0.2) +
         scale_fill_manual(values = c("Native" = "#6B8E23", "Non-Native" = "#D2691E")) +
-        labs(y = "Percent Cover", 
-             x = "Species", 
+        labs(y = "Relative Abundance", 
+             x = NULL, 
              title = "Vegetation Abundance by Species", 
              fill = "Type") +
         theme_minimal() +
-        theme(plot.title = element_text(size = 16, hjust = 0.5, vjust = 1)) +
+        theme(plot.title = element_text(size = 16, hjust = 0.5),
+              axis.text.y = element_text(size = 9)) +
         #expand_limits(y = max(species_abundance$percent_cover) + 5) +
         coord_flip()  
       
-    }
-    
-    ## ........................... Output Selected Plot ...........................
-    
-    ggplotly(p)
-    
-  }) # END renderPlotly plot-level viz
+  }) # END species abundance plot
   
   
   # ==================================================================================
@@ -269,7 +270,7 @@ server <- function(input, output, session) {
       
       tr_p <- ggplot(df, aes_string("transect_distance_of_quadrat", y_var)) +
         # geom_smooth(se=FALSE) +
-        geom_line(alpha = 0.4, col = "blue") +
+        geom_line(alpha = 0.3, col = "blue") +
         geom_point() +
         theme_minimal() +
         labs(x = "Transect Distance of Quadrat",
@@ -283,7 +284,7 @@ server <- function(input, output, session) {
       
       tr_p <- ggplot(df, aes_string("transect_distance_of_quadrat", y_var)) +
         # geom_smooth(se=FALSE) +
-        geom_line(alpha = 0.4, col = "blue") +
+        geom_line(alpha = 0.3, col = "blue") +
         geom_point() +
         theme_minimal() +
         labs(x = "Transect Distance of Quadrat",

@@ -140,24 +140,25 @@ body <- dashboardBody(
                   fluidRow(
                     
                     # pool-level viz filters ----
-                    column(width = 4,
+                    column(width = 6,
                            selectizeInput("p_viz_location_pool_id", "Select Location-Pool ID:",
                                           choices = sort(unique(c(hydro$location_pool_id, 
                                                                   percent_cover$location_pool_id))),
                                           multiple = FALSE)),
-                    column(width = 4,
-                           selectizeInput("p_viz_type", "Select Metric:",
-                                          choices = c("Water Level", 
-                                                      "Species Abundance"),
-                                          multiple = FALSE)),
-                    column(width = 4,
+                    
+                    column(width = 6,
                            selectizeInput("p_viz_water_year", "Select Water Year:",
                                           choices = unique(hydro$water_year),
                                           multiple = FALSE)),
                     
                     # pool-level visualization output ----
-                    column(width = 12,
-                           plotlyOutput("pool_level_viz"))
+                    column(width = 6,
+                           plotlyOutput("water_level_viz")), 
+                    
+                    column(width = 6,
+                           plotlyOutput("spp_abundance_viz"))
+                    
+                    
                     
                   ))), # END pool-level fluidRow 
             
