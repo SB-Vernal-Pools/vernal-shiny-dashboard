@@ -164,7 +164,6 @@ body <- dashboardBody(
             
             
             
-            
             #Transect-level data visualizations ----
             fluidRow(
               box(width = 8,
@@ -216,8 +215,10 @@ body <- dashboardBody(
                   height = 612,
                   title = strong("Additional Information"),
                   includeMarkdown("text/additional-info.md"),
-                  imageOutput("tr_spp_image"),
-                  uiOutput("tr_spp_text")
+                  conditionalPanel("input.tr_viz_type == 'Percent Cover Single Species'",
+                                   imageOutput("tr_spp_image"),
+                                   uiOutput("tr_spp_text"))
+                  
               )
             ) # END main fluidRow
             
