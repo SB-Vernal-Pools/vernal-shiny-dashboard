@@ -4,8 +4,8 @@ server <- function(input, output, session) {
   #                                Vernal Pool Map                                ----
   # ==================================================================================
   
-  # Define the reactive value
-  selected_polygon <- reactiveVal(NULL)
+  
+  #-------------------- legend options -------------------------
   
   # Define color palette
   status_colors <- c("Active Monitoring" = "blue", 
@@ -14,23 +14,6 @@ server <- function(input, output, session) {
   
   legend_colors <- c("blue", "orange")
   legend_labels <- c("Active Monitoring", "Non-Active Monitoring")
-  
-  # Create a color mapping function with debugging
-  colorMapping <- function(status) {
-    colors <- sapply(status, function(s) {
-      color <- status_colors[s]
-      if (is.null(color) || is.na(color)) {
-        print(paste("Unexpected status:", s))
-        return("gray")  # Default color for unexpected status
-      }
-      return(color)
-    })
-    print("Unique statuses:")
-    print(unique(status))
-    print("Mapped colors:")
-    print(unique(colors))
-    return(colors)
-  } # END colorMapping function
   
   output$map <- renderLeaflet({
     print("Rendering initial map")
@@ -47,13 +30,30 @@ server <- function(input, output, session) {
         return(status_colors["Unknown"])
       }
     })
+
     
-    print("Unique fill_color values:")
-    print(unique(vernal_polygon_abiotic$fill_color))
+  #------------------ Leaflet Map ----------------------------
     
+    # setting up map basemap and view
     leaflet() %>%
-      addTiles() %>%
-      setView(lng = -119.8489, lat = 34.4140, zoom = 15) %>%
+      addProviderTiles(providers$CartoDB) %>%
+      setView(lng = -119.8489, lat = 34.4140, zoom = 13) %>%
+      
+      #clustering of data
+      addMarkers(data = centroids,
+                 clusterOptions = markerClusterOptions(), # this ENABLES the marker plugin
+                 popup = ~paste0("Location-Pool ID: ", location_pool_id, "<br>",
+                                  "Research Status: ", ifelse(is.na(research_conducted_status), "Unknown", research_conducted_status), "<br>",
+                                  "Site Area (m²): ", round(site_area_m2, 2), "<br>",
+                                  "Pool Area (m²): ", round(pool_area_m2, 2), "<br>",
+                                  "Pool Circumference (ft): ", round(pool_circumference_ft, 2), "<br>",
+                                  "Pool Edge Ratio: ", round(pool_edge_ratio, 2), "<br>",
+                                  "Restoration Year: ", restoration_year, "<br>",
+                                  "Time Since: ", time_since, "<br>",
+                                  "Period: ", period, "<br>",
+                                  "Depth (cm): ", round(depth_cm, 2))) %>%
+     
+      #polygon edits and popup
       addPolygons(data = vernal_polygon_abiotic,
                   fillColor = ~fill_color,
                   color = "black",
@@ -67,107 +67,18 @@ server <- function(input, output, session) {
                                   "Pool Area (m²): ", round(pool_area_m2, 2), "<br>",
                                   "Pool Circumference (ft): ", round(pool_circumference_ft, 2), "<br>",
                                   "Pool Edge Ratio: ", round(pool_edge_ratio, 2), "<br>",
-                                  "Edge Distance Max: ", round(edge_distance_max, 2), "<br>",
                                   "Restoration Year: ", restoration_year, "<br>",
                                   "Time Since: ", time_since, "<br>",
                                   "Period: ", period, "<br>",
                                   "Depth (cm): ", round(depth_cm, 2))
       ) %>%
+      
+      #legend addition
       addLegend(position = "bottomright",
                 colors = legend_colors,
                 labels = legend_labels,
                 title = "Research Status",
                 opacity = 1)
-  }) # END renderLeaflet for pool map
-  
-  # Reactive function for filtered data
-  filtered_data <- reactive({
-    print("Filtering data...")
-    print(paste("Pool size:", input$location_pool_size_select))
-    print(paste("Month:", paste(input$month_select, collapse = ", ")))
-    print(paste("Year:", paste(input$year_select, collapse = ", ")))
-    print(paste("Location-Pool ID:", paste(input$location_pool_id_select, collapse = ", ")))
-    
-    data <- vernal_polygon_abiotic
-    
-    # Filter by pool size
-    if (!is.null(input$location_pool_size_select) && input$location_pool_size_select != "All") {
-      selected_interval <- which(jenks_labels == input$location_pool_size_select)
-      lower_bound <- jenks_breaks[selected_interval]
-      upper_bound <- jenks_breaks[selected_interval + 1]
-      data <- data[data$pool_area_m2 >= lower_bound & data$pool_area_m2 < upper_bound, ]
-    }
-    
-    # Filter by month
-    if (!is.null(input$month_select) && length(input$month_select) > 0) {
-      data <- data[data$month %in% input$month_select, ]
-    }
-    
-    # Filter by year
-    if (!is.null(input$year_select) && length(input$year_select) > 0) {
-      print("Filtering by year...")
-      print(paste("Years selected:", paste(input$year_select, collapse = ", ")))
-      print(paste("Unique years in data before filtering:", paste(unique(data$year), collapse = ", ")))
-      
-      data <- data[data$year %in% input$year_select, ]
-      
-      print(paste("Rows after year filtering:", nrow(data)))
-      print(paste("Unique years in data after filtering:", paste(unique(data$year), collapse = ", ")))
-    }
-    
-    # Filter by location_pool_id
-    if (!is.null(input$location_pool_id_select) && length(input$location_pool_id_select) > 0) {
-      data <- data[data$location_pool_id %in% input$location_pool_id_select, ]
-    }
-    
-    print(paste("Filtered data rows:", nrow(data)))
-    data
-  }) # END reactive filtered data
-  
-  # Update the map
-  observe({
-    filtered <- filtered_data()
-    
-    print("Updating map...")
-    print(paste("Number of polygons to display:", nrow(filtered)))
-    print("Unique research_conducted_status values in filtered data:")
-    print(unique(filtered$research_conducted_status))
-    
-    # Assign colors based on status, handling NA values
-    filtered$fill_color <- sapply(filtered$research_conducted_status, function(status) {
-      if (is.na(status)) {
-        return(status_colors["Unknown"])
-      } else if (status %in% names(status_colors)) {
-        return(status_colors[status])
-      } else {
-        return(status_colors["Unknown"])
-      }
-    })
-    
-    print("Unique fill_color values in filtered data:")
-    print(unique(filtered$fill_color))
-    
-    leafletProxy("map") %>%
-      clearShapes() %>%
-      addPolygons(data = filtered,
-                  fillColor = ~fill_color,
-                  color = "black",
-                  weight = 1,
-                  opacity = 1,
-                  fillOpacity = 0.7,
-                  layerId = ~location_pool_id,
-                  popup = ~paste0("Location-Pool ID: ", location_pool_id, "<br>",
-                                  "Research Status: ", ifelse(is.na(research_conducted_status), "Unknown", research_conducted_status), "<br>",
-                                  "Site Area (m²): ", round(site_area_m2, 2), "<br>",
-                                  "Pool Area (m²): ", round(pool_area_m2, 2), "<br>",
-                                  "Pool Circumference (ft): ", round(pool_circumference_ft, 2), "<br>",
-                                  "Pool Edge Ratio: ", round(pool_edge_ratio, 2), "<br>",
-                                  "Edge Distance Max: ", round(edge_distance_max, 2), "<br>",
-                                  "Restoration Year: ", restoration_year, "<br>",
-                                  "Time Since: ", time_since, "<br>",
-                                  "Period: ", period, "<br>",
-                                  "Depth (cm): ", round(depth_cm, 2))
-      )
   })
   
   # ==================================================================================

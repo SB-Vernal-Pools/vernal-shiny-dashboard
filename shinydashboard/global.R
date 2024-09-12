@@ -6,6 +6,7 @@ library(shinycssloaders)
 library(leaflet)
 library(shinyWidgets)
 library(leaflet.extras)
+#library(leaflet.markercluster)
 library(googleway)
 library(htmlwidgets)
 library(htmltools)
@@ -84,4 +85,5 @@ jenks_labels <- paste(
   "sq m"
 )
 
-
+# Calculate centroids for clustering
+centroids <- st_centroid(vernal_polygon_abiotic)

@@ -83,24 +83,6 @@ body <- dashboardBody(
                   
                   # filters for vernal pool map ----
                   fluidRow(
-                    column(width = 4,
-                           selectizeInput("location_pool_id_select", "Select Location-Pool ID(s):",
-                                          choices = sort(unique(vernal_polygon_abiotic$location_pool_id)),
-                                          multiple = TRUE)),
-                    column(width = 3,
-                           selectInput("location_pool_size_select", "Select Pool Size (Area):",
-                                       choices = c("All", jenks_labels),
-                                       selected = "All")),
-                    column(width = 2,
-                           selectizeInput("month_select", "Select Month(s):",
-                                          choices = unique(vernal_polygon_abiotic$month),
-                                          multiple = TRUE,
-                                          width = "100%")),
-                    column(width = 3,
-                           selectizeInput("year_select", "Select Year(s):",
-                                          choices = unique(vernal_polygon_abiotic$year), 
-                                          multiple = TRUE,
-                                          width = "100%")),
                     
                     column(width = 12,
                            leafletOutput("map"))
