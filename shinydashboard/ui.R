@@ -58,6 +58,11 @@ body <- dashboardBody(
                   tags$img(height = "75%", width = "75%", align = "center",
                            style = "max-width:80%; text-align: center; display: block; margin: auto;"),
                   includeMarkdown("text/data.md") # https://www.google.com/url?sa=i&url=https%3A%2F%2Fohv.parks.ca.gov%2F%3Fpage_id%3D27452&psig=AOvVaw3ugCtlsqzW8-tq6YoaF3RC&ust=1724806019834000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCNikqaX5k4gDFQAAAAAdAAAAABAE
+              ),
+              box(
+                  width = 12,
+                  title =tagList(icon("tint"), strong("Plant Species List")),
+                  dataTableOutput("species_list")
               )
             )
     ),

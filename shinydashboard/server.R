@@ -1,4 +1,23 @@
 server <- function(input, output, session) {
+  # ==================================================================================
+  #                                species list                             ----
+  # ==================================================================================
+  
+  output$species_list <- renderDataTable({
+    percent_cover %>% 
+      select(species) %>% 
+      distinct() %>%
+      arrange(species) %>%
+      rename("Species" = species)
+  },
+  options = list(
+    searching = TRUE,
+    lengthChange = FALSE,
+    pageLength = 10))
+  
+  
+  
+  
   
   # ==================================================================================
   #                                Vernal Pool Map                                ----
@@ -6,7 +25,6 @@ server <- function(input, output, session) {
   
   
   #-------------------- legend options -------------------------
-  
   # Define color palette
   status_colors <- c("Active Monitoring" = "blue", 
                      "Non-Active Monitoring" = "orange", 
