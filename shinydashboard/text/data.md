@@ -11,17 +11,7 @@ Our map dashboard provides key information about each vernal pool, including:
 -  Site Area (m²)
 -  Month and Year of data collection
 
-
-Our data Vizualizer Dashboard provides:
-- **Location-Pool ID Selection:**
-  - Users can select a specific vernal pool location using a unique identifier.
-
-- **Water Year Selection:**
-    - Users can choose a specific water year for analysis.
-
-- **Species Selection:**
-    - There's an option to select individual plant species for detailed analysis.
-
+This information can be accessed by clicking on a pool polygon
 
  **Plot Types:**
 
@@ -38,18 +28,12 @@ Users can generate various types of plots:
 The visualizations draw from two main data sources:
 a. Hydro data: Contains information about water levels.
 b. Percent cover data: Contains information about plant species coverage.
-Time-based Analysis:
-
-The water level plot allows for analysis by water year and date.
-Species abundance and cover plots likely show data for selected time periods.
 
 
-**Spatial Analysis:**
+**Data Collection**
+Vernal pool polygons were recorded on a Trimble in winter 2019 by walking around the perimeter of the pool.
 
-The species cover plots show data in relation to transect distance, allowing for spatial analysis within each pool.
+Vernal pool vegetation is recorded annually in the spring.  For each pool, we laid out two transects bisecting the pool along its elliptical major and minor axes.  Every other meter along each transect, we laid down a 1m2 quadrat with 1% subdivisions.  We identified every plant species present and estimated its percent cover in each quadrat.  We also estimated the percent cover of bare ground and thatch.  Because low-growing graminoids and forbs were overlaid with taller species, the total percent cover could exceed 100% in each quadrat.
 
-
-**Interactive Plots:**
-
-The use of Plotly suggests that these visualizations are interactive, allowing users to hover, zoom, and possibly select data points for more information.
+Vernal pool hydrology is recorded weekly during the wet phase.  To measure hydrology, we installed 0.8m rulers in the deepest part of each pool and recorded the depth of the water in each pool every week.
 

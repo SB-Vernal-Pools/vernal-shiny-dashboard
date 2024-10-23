@@ -39,6 +39,8 @@ sass(
 # store data file path
 data_path <- here("data")
 
+
+#vernal pools polygons
 vernal_polygon <- st_read(here(data_path, "vernal_pools_monitored", "vernal_pools_monitored.shp")) %>% 
   rename(location = locatin,
          location_pool_id = lctn_p_) %>% 
@@ -47,17 +49,28 @@ vernal_polygon <- st_read(here(data_path, "vernal_pools_monitored", "vernal_pool
 # hydrology data
 hydro <- read_csv(here(data_path, "hydro_data.csv")) 
 
-# cleaning percent cover labels for images
-percent_cover <- read_csv(here(data_path, "percent_cover_data.csv")) 
-percent_cover$species <- gsub("_", " ", percent_cover$species)
 
 
 # abiotic data
 abiotic <- read_csv(here(data_path, "pc_abiotic_data.csv")) 
 
+
+# invert species list
+invert_species <- read_csv(here(data_path, "invert_species.csv"))
+
+## ==============================
+##      Data  Prepping    ----
+## ==============================
+
+# cleaning percent cover labels for images
+percent_cover <- read_csv(here(data_path, "percent_cover_data.csv")) 
+percent_cover$species <- gsub("_", " ", percent_cover$species)
+
+
 summarized_abiotic <- abiotic %>%
   group_by(location_pool_id) %>% #created column
   summarise(across(where(is.numeric), mean, na.rm = TRUE))
+
 
 
 vernal_polygon_abiotic <- vernal_polygon %>%

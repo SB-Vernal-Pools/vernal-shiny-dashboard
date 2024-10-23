@@ -4,8 +4,7 @@ Interactive Vernal Pool Map:
 
 Visualize the locations of vernal pools in the Santa Barbara region
 Select specific Location-Pool IDs to focus on particular pools
-Filter pools by size (units)
-Choose specific months and years for temporal analysis
+click a polygon to view'''' metadata 
 
 
 Data Visualization Tools:

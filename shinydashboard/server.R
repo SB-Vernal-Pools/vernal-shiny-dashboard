@@ -15,8 +15,21 @@ server <- function(input, output, session) {
     lengthChange = FALSE,
     pageLength = 10))
   
+  # ==================================================================================
+  #                                invert_species_list                           ----
+  # ==================================================================================
   
-  
+  output$invert_species_list <- renderDataTable({
+    invert_species %>% 
+      select(order, family, genus, species) %>% 
+      distinct() %>%
+      arrange(species)
+  },
+  options = list(
+    searching = TRUE,
+    lengthChange = FALSE,
+    pageLength = 10, 
+    footer = FALSE))
   
   
   # ==================================================================================

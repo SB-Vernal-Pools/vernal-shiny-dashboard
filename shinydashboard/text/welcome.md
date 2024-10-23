@@ -3,8 +3,7 @@
 ## Information and Data Visualization of Vernal Pools managed by UCSB's Cheadle Center for Biodiversity & Ecological Restoration.
 
 
-
-Welcome to the Santa Barbara Vernal Pool dashboard. The purpose of this dashboard is to provide an interactive map of Vernal pools within the Santa Barbara region, and provide general characteristics on each pool. Additionally, each pool also provides data visualization and statistics. All primary research and efforts come from Joanna Tang and managed by UCSB's Cheadle Center for Biodiversity & Ecological Restoration.
+Welcome to this data dashboard of Santa Barbara’s vernal pool wetlands!  Here, you will find vegetation, hydrology, topography, and wildlife data of the vernal pools surrounding the University of California, Santa Barbara (UCSB).  Click on the map to learn more about the pools, and then move to the Data Visualizations tab to generate visualizations of data starting in 2019
 
 
 Project Manager and Rearcher: Joanna Tang, PhD
@@ -18,12 +17,6 @@ Project Manager and Rearcher: Joanna Tang, PhD
 
 Visualize the locations of vernal pools in the Santa Barbara region
 
-Select specific Location-Pool IDs to focus on particular pools
-
-Filter pools by size (units)
-
-Choose specific months and years for temporal analysis
-
 Comprehensive Pool Information:
 Access key data for each pool, including:
 
@@ -31,7 +24,6 @@ Access key data for each pool, including:
 - Pool Area (m²)
 - Pool Circumference (ft)
 - Site Area (m²)
-- Edge Distance Max
 - Restoration Year
 - Time Since Restoration
 - Period of Data Collection
