@@ -12,10 +12,10 @@ header <- dashboardHeader(
 #================================================================
 
 sidebar <- dashboardSidebar(
-  sidebarMenu(
-    menuItem("Welcome", tabName = "welcome", icon = icon("star")),
-    menuItem("Vernal Pool Maps", tabName = "dashboard", icon = icon("gauge")),
-    menuItem("Data Visualization", tabName = "dataviz", icon = icon("chart-line"))
+  sidebarMenu(id = "sidebarMenu",  # Add this ID
+              menuItem("Welcome", tabName = "welcome", icon = icon("star")),
+              menuItem("Vernal Pool Maps", tabName = "dashboard", icon = icon("gauge")),
+              menuItem("Data Visualization", tabName = "dataviz", icon = icon("chart-line"))
   )
 )
 

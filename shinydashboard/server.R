@@ -16,7 +16,7 @@ server <- function(input, output, session) {
     pageLength = 10))
   
   # ==================================================================================
-  #                                invert_species_list                           ----
+  #                                Invertebrate List                              ----
   # ==================================================================================
   
   output$invert_species_list <- renderDataTable({
@@ -35,11 +35,18 @@ server <- function(input, output, session) {
   # ==================================================================================
   #                                Vernal Pool Map                                ----
   # ==================================================================================
+  
+  # Colors for research status
   vernal_map_data <- vernal_polygon_abiotic %>% 
     mutate(research_conducted_status = as.factor(research_conducted_status))
-  
   factpal <- colorFactor(c("blue", "orange"), vernal_map_data$research_conducted_status)
   
+  
+  # Reactive value for link
+  selected_pool <- reactiveVal(NULL)
+  
+  
+  # Leaflet output
   output$map <- renderLeaflet({
     leaflet(vernal_map_data) %>%
       addProviderTiles(providers$CartoDB) %>%
@@ -48,16 +55,36 @@ server <- function(input, output, session) {
       #add clustering and labels
       addMarkers(data = centroids,
                  clusterOptions = markerClusterOptions(), # this ENABLES the marker plugin
-                 popup = ~paste0("Location-Pool ID: ", location_pool_id, "<br>",
-                                 "Research Status: ", research_conducted_status, "<br>",
-                 "Site Area (m²): ", round(site_area_m2, 2), "<br>",
-                 "Pool Area (m²): ", round(pool_area_m2, 2), "<br>",
-                 "Pool Circumference (ft): ", round(pool_circumference_ft, 2), "<br>",
-                 "Pool Edge Ratio: ", round(pool_edge_ratio, 2), "<br>",
-                 "Restoration Year: ", restoration_year, "<br>",
-                 "Time Since: ", time_since, "<br>",
-                 "Period: ", period, "<br>",
-                 "Depth (cm): ", round(depth_cm, 2))) %>%
+                 popup = ~sprintf(
+                   
+                   paste0(
+                     "Location-Pool ID: %s<br>",
+                     "Research Status: %s<br>",
+                     "Site Area (m²): %.2f<br>",
+                     "Pool Area (m²): %.2f<br>",
+                     "Pool Circumference (ft): %.2f<br>",
+                     "Pool Edge Ratio: %.2f<br>",
+                     "Restoration Year: %s<br>",
+                     "Time Since: %s<br>",
+                     "Period: %s<br>",
+                     "Depth (cm): %.2f<br>",
+                     "<a href='#' onclick='Shiny.setInputValue(\"goto_data\", \"%s\"); return false;'>",
+                     "View Data Visualizations</a>"),
+                   
+                   location_pool_id,
+                   research_conducted_status,
+                   round(site_area_m2, 2),
+                   round(pool_area_m2, 2),
+                   round(pool_circumference_ft, 2),
+                   round(pool_edge_ratio, 2),
+                   restoration_year,
+                   time_since,
+                   period,
+                   round(depth_cm, 2),
+                   location_pool_id) # END sprintf for pop-up
+                 
+                 
+      ) %>%
       
       # add pool polygons/geometries
       addPolygons(stroke = FALSE,
@@ -75,10 +102,19 @@ server <- function(input, output, session) {
     
   }) #END renderLeaflet 
   
+  
   # ==================================================================================
   #                               Pool Level Visualizations                       ----
   # ==================================================================================
   
+  # Link/filter for data visualization (map connection)
+  observeEvent(input$goto_data, {
+    selected_pool(input$goto_data)
+    updateSelectInput(session, 
+                      "p_viz_location_pool_id", 
+                      selected = input$goto_data)
+    updateTabItems(session, "sidebarMenu", selected = "dataviz")
+  })
   
   ## ................................ Water Level Plot ..........................
   

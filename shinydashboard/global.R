@@ -87,3 +87,6 @@ vernal_polygon_abiotic <- vernal_polygon_abiotic %>%
          research_conducted_status = ifelse(is.na(site_area_m2), "Non-Active Monitoring", "Active Monitoring")) %>% 
   mutate(year = case_when(year == 1899 ~ 2020,
                           TRUE ~ 2019))
+
+# Calculate centroids for clustering
+centroids <- st_centroid(vernal_polygon_abiotic)
