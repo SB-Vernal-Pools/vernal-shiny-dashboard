@@ -35,82 +35,45 @@ server <- function(input, output, session) {
   # ==================================================================================
   #                                Vernal Pool Map                                ----
   # ==================================================================================
+  vernal_map_data <- vernal_polygon_abiotic %>% 
+    mutate(research_conducted_status = as.factor(research_conducted_status))
   
-  
-  #-------------------- legend options -------------------------
-  # Define color palette
-  status_colors <- c("Active Monitoring" = "blue", 
-                     "Non-Active Monitoring" = "orange", 
-                     "Unknown" = "gray")
-  
-  legend_colors <- c("blue", "orange")
-  legend_labels <- c("Active Monitoring", "Non-Active Monitoring")
+  factpal <- colorFactor(c("blue", "orange"), vernal_map_data$research_conducted_status)
   
   output$map <- renderLeaflet({
-    print("Rendering initial map")
-    print("Unique research_conducted_status values:")
-    print(unique(vernal_polygon_abiotic$research_conducted_status))
-    
-    # Assign colors based on status, handling NA values
-    vernal_polygon_abiotic$fill_color <- sapply(vernal_polygon_abiotic$research_conducted_status, function(status) {
-      if (is.na(status)) {
-        return(status_colors["Unknown"])
-      } else if (status %in% names(status_colors)) {
-        return(status_colors[status])
-      } else {
-        return(status_colors["Unknown"])
-      }
-    })
-
-    
-  #------------------ Leaflet Map ----------------------------
-    
-    # setting up map basemap and view
-    leaflet() %>%
+    leaflet(vernal_map_data) %>%
       addProviderTiles(providers$CartoDB) %>%
       setView(lng = -119.8489, lat = 34.4140, zoom = 13) %>%
       
-      #clustering of data
+      #add clustering and labels
       addMarkers(data = centroids,
                  clusterOptions = markerClusterOptions(), # this ENABLES the marker plugin
                  popup = ~paste0("Location-Pool ID: ", location_pool_id, "<br>",
-                                  "Research Status: ", ifelse(is.na(research_conducted_status), "Unknown", research_conducted_status), "<br>",
-                                  "Site Area (m²): ", round(site_area_m2, 2), "<br>",
-                                  "Pool Area (m²): ", round(pool_area_m2, 2), "<br>",
-                                  "Pool Circumference (ft): ", round(pool_circumference_ft, 2), "<br>",
-                                  "Pool Edge Ratio: ", round(pool_edge_ratio, 2), "<br>",
-                                  "Restoration Year: ", restoration_year, "<br>",
-                                  "Time Since: ", time_since, "<br>",
-                                  "Period: ", period, "<br>",
-                                  "Depth (cm): ", round(depth_cm, 2))) %>%
-     
-      #polygon edits and popup
-      addPolygons(data = vernal_polygon_abiotic,
-                  fillColor = ~fill_color,
-                  color = "black",
+                                 "Research Status: ", research_conducted_status, "<br>",
+                 "Site Area (m²): ", round(site_area_m2, 2), "<br>",
+                 "Pool Area (m²): ", round(pool_area_m2, 2), "<br>",
+                 "Pool Circumference (ft): ", round(pool_circumference_ft, 2), "<br>",
+                 "Pool Edge Ratio: ", round(pool_edge_ratio, 2), "<br>",
+                 "Restoration Year: ", restoration_year, "<br>",
+                 "Time Since: ", time_since, "<br>",
+                 "Period: ", period, "<br>",
+                 "Depth (cm): ", round(depth_cm, 2))) %>%
+      
+      # add pool polygons/geometries
+      addPolygons(stroke = FALSE,
+                  color = ~factpal(research_conducted_status),
                   weight = 1,
                   opacity = 1,
                   fillOpacity = 0.7,
-                  layerId = ~location_pool_id,
-                  popup = ~paste0("Location-Pool ID: ", location_pool_id, "<br>",
-                                  "Research Status: ", ifelse(is.na(research_conducted_status), "Unknown", research_conducted_status), "<br>",
-                                  "Site Area (m²): ", round(site_area_m2, 2), "<br>",
-                                  "Pool Area (m²): ", round(pool_area_m2, 2), "<br>",
-                                  "Pool Circumference (ft): ", round(pool_circumference_ft, 2), "<br>",
-                                  "Pool Edge Ratio: ", round(pool_edge_ratio, 2), "<br>",
-                                  "Restoration Year: ", restoration_year, "<br>",
-                                  "Time Since: ", time_since, "<br>",
-                                  "Period: ", period, "<br>",
-                                  "Depth (cm): ", round(depth_cm, 2))
-      ) %>%
+                  layerId = ~location_pool_id) %>% 
       
-      #legend addition
-      addLegend(position = "bottomright",
-                colors = legend_colors,
-                labels = legend_labels,
-                title = "Research Status",
-                opacity = 1)
-  })
+      # add legend
+      addLegend(position = 'bottomright',
+                pal = factpal,
+                values = c('Active Monitoring', "Non-Active Monitoring"),
+                labels = c('Active Monitoring', "Non-Active Monitoring"))
+    
+  }) #END renderLeaflet 
   
   # ==================================================================================
   #                               Pool Level Visualizations                       ----
@@ -150,24 +113,24 @@ server <- function(input, output, session) {
       group_by(species, type) %>%
       summarise(percent_cover = sum(percent_cover, na.rm = TRUE)/100) %>% 
       filter(type %in% c("Non-Native", "Native"))
-      
-      
-      # store species abundance plot
-      p <- species_abundance %>%
-        ggplot(aes(reorder(species, percent_cover), percent_cover, fill = type)) +
-        geom_col() +
-        #geom_text(aes(label = percent_cover), size = 3, hjust = -0.2) +
-        scale_fill_manual(values = c("Native" = "#6B8E23", "Non-Native" = "#D2691E")) +
-        labs(y = "Relative Abundance", 
-             x = NULL, 
-             title = "Vegetation Abundance by Species", 
-             fill = "Type") +
-        theme_minimal() +
-        theme(plot.title = element_text(size = 16, hjust = 0.5),
-              axis.text.y = element_text(size = 9)) +
-        #expand_limits(y = max(species_abundance$percent_cover) + 5) +
-        coord_flip()  
-      
+    
+    
+    # store species abundance plot
+    p <- species_abundance %>%
+      ggplot(aes(reorder(species, percent_cover), percent_cover, fill = type)) +
+      geom_col() +
+      #geom_text(aes(label = percent_cover), size = 3, hjust = -0.2) +
+      scale_fill_manual(values = c("Native" = "#6B8E23", "Non-Native" = "#D2691E")) +
+      labs(y = "Relative Abundance", 
+           x = NULL, 
+           title = "Vegetation Abundance by Species", 
+           fill = "Type") +
+      theme_minimal() +
+      theme(plot.title = element_text(size = 16, hjust = 0.5),
+            axis.text.y = element_text(size = 9)) +
+      #expand_limits(y = max(species_abundance$percent_cover) + 5) +
+      coord_flip()  
+    
   }) # END species abundance plot
   
   

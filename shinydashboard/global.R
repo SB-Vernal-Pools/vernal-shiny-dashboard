@@ -19,7 +19,7 @@ library(lubridate)
 library(tidylog)
 library(janitor)
 library(snakecase)
-library(BAMMtools)  # for getJenksBreaks function
+#library(BAMMtools)  # for getJenksBreaks function
 
 ## ==============================
 ##         Compile CSS       ----
@@ -87,16 +87,3 @@ vernal_polygon_abiotic <- vernal_polygon_abiotic %>%
          research_conducted_status = ifelse(is.na(site_area_m2), "Non-Active Monitoring", "Active Monitoring")) %>% 
   mutate(year = case_when(year == 1899 ~ 2020,
                           TRUE ~ 2019))
-
-jenks_breaks <- getJenksBreaks(vernal_polygon_abiotic$pool_area_m2, k = 5)  # Adjust k for desired number of categories
-
-# Create labels for the intervals
-jenks_labels <- paste(
-  round(jenks_breaks[-length(jenks_breaks)], 2),
-  "-",
-  round(jenks_breaks[-1], 2),
-  "sq m"
-)
-
-# Calculate centroids for clustering
-centroids <- st_centroid(vernal_polygon_abiotic)
