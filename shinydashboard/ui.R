@@ -16,8 +16,7 @@ sidebar <- dashboardSidebar(
               menuItem("Welcome", tabName = "welcome", icon = icon("star")),
               menuItem("Vernal Pool Maps", tabName = "dashboard", icon = icon("gauge")),
               menuItem("Data Visualization", tabName = "dataviz", icon = icon("chart-line"))
-  )
-)
+  ))
 
 #================================================================
 #                        Dashboard Body
@@ -36,7 +35,7 @@ body <- dashboardBody(
       tabName = "welcome",
       fluidRow(
         box(width = 12,
-            title = tagList(icon("tint"), strong("Santa Barbara 2019 Vernal Pool Monitoring Dashboard")),
+            title = tagList(icon("tint"), strong("Welcome - Santa Barbara Vernal Pool Mapping")),
             tags$img(src = "venal-pic-ex.jpg", height = "75%", width = "75%", align = "center",
                      style = "max-width:80%; text-align: center; display: block; margin: auto;"),
             includeMarkdown("text/welcome.md")
@@ -67,26 +66,24 @@ body <- dashboardBody(
       ),
       fluidRow(
         box(width = 12,
-            title = tagList(icon("tint"), strong("Data")),
+            title = tagList(icon("tint"), strong("About the Data")),
             includeMarkdown("text/data.md")
         )
       ),
       fluidRow(
         box(width = 12,
-            title = tagList(icon("tint"), strong("Additional Information")),
-            includeMarkdown("text/additional-info.md")
-        )
-      ),
-      fluidRow(
-        box(width = 12,
             title = tagList(icon("tint"), strong("Plant Species List")),
-            dataTableOutput("species_list")
+            dataTableOutput("species_list"),
+            collapsible = TRUE,
+            collapsed = TRUE
         )
       ),
       fluidRow(
         box(width = 12,
-            title = tagList(icon("tint"), strong("Invert Species List")),
-            dataTableOutput("invert_species_list")
+            title = tagList(icon("tint"), strong("Invertebrate Species List")),
+            dataTableOutput("invert_species_list"),
+            collapsible = TRUE,
+            collapsed = TRUE
         )
       )
     ),
@@ -96,19 +93,20 @@ body <- dashboardBody(
       tabName = "dashboard",
       fluidRow(
         box(width = 12,
-            title = strong("How to Use the Mapping Dashboard"),
-            includeMarkdown("text/how-to-map.md")
+            title = strong("Explore Santa Barbara Vernal Pools"),
+            includeMarkdown("text/how-to-map.md"),
+            leafletOutput("map")
         )
       ),
-      fluidRow(
-        box(width = 12,
-            title = strong("Vernal Pool Interactive Map"),
-            fluidRow(
-              column(width = 12,
-                     leafletOutput("map"))
-            )
-        )
-      )
+      # fluidRow(
+      #   box(width = 12,
+      #       title = strong("Vernal Pool Interactive Map"),
+      #       fluidRow(
+      #         column(width = 12,
+      #                leafletOutput("map"))
+      #       )
+      #   )
+      # )
     ),
     
     # Data Visualization Tab ----

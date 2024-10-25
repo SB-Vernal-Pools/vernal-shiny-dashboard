@@ -1,8 +1,8 @@
+#### About Vernal Pools
+Vernal pools are temporary wetlands that form when rainwater collects in depressions in the landscape, and the water pools if there is a subsurface impermeable soil layer that doesn’t allow the rainwater to sink into the groundwater system.  In California, vernal pools form during our wet rainy winter months, and because the pools are entirely rainfed, they dry up completely during the summer and fall. That means that any plants or animals that live in vernal pools need to be able to withstand complete flooding and complete drying, so most of the species you find in vernal pools are native endemics – they aren’t found anywhere else in the world!  However, these unique habitats and species are now endangered – only 5% of pre-industrial vernal pool habitat still exists today.  The majority of vernal pools have been lost to or degraded by urbanization and agricultural operations.
 
-Background on Vernal Pools
+<br>
 
-Vernal pools are unique seasonal wetlands that form in shallow depressions during wet periods and dry out completely in warmer months.These ecosystems play a crucial role in supporting specialized plant and animal species that have adapted to their cyclical nature. There are three distinct phases: a wet phase when the pool fills with rainwater, an aquatic phase supporting various aquatic organisms, and a dry phase when the pool dries out. Vernal pools are sensitive to changes in the environment, making them useful for studying local plant and animal life, and how the climate is changing. Their unique features and the special creatures living in them make vernal pools important to study and protect.
-
-Santa Barbara Vernal Pools Overview
-There are approximately (70) Vernal Pools in Santa Barbara, however about (54) are under active monitoring. Majority of Vernal Pools are located near the coast, Southwest to South of Goleta. A few are Located in the Mesa Portion of Santa Barbara, although it does not fall under active monitoring. 
+#### Santa Barbara Vernal Pools
+Vernal pools used to dot the entire coastal landscape of Santa Barbara, but rapid coastal urbanization has destroyed the vast majority of them and caused the local extinction of state- and federally-listed species.  Yet, we are very lucky to have some remaining vernal pools in the area!  In addition, UCSB’s Cheadle Center for Biodiversity & Ecological Restoration has been doing vernal pool restoration and creation since the 1980s.  Many campus housing developments have vernal pools tucked within them.  We hope this map will help you find and explore the unique ecosystems in your area!
 

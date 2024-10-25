@@ -104,17 +104,31 @@ server <- function(input, output, session) {
   
   
   # ==================================================================================
-  #                               Pool Level Visualizations                       ----
+  #                               Connect Map & Data Viz                          ----
   # ==================================================================================
   
   # Link/filter for data visualization (map connection)
   observeEvent(input$goto_data, {
-    selected_pool(input$goto_data)
+    selected_pool(input$goto_data)  # Store the selected pool ID
+    
+    # Update both inputs
     updateSelectInput(session, 
                       "p_viz_location_pool_id", 
                       selected = input$goto_data)
+    
+    updateSelectInput(session, 
+                      "tr_viz_location_pool_id", 
+                      selected = input$goto_data)
+    
+    # Switch to data viz tab
     updateTabItems(session, "sidebarMenu", selected = "dataviz")
+    
   })
+  
+  # ==================================================================================
+  #                               Pool Level Visualizations                       ----
+  # ==================================================================================
+  
   
   ## ................................ Water Level Plot ..........................
   

@@ -1,11 +1,7 @@
-#### **Select Location-Pool ID(s):**
+#### Tips:
 
-Use the dropdown menu to choose one or more specific vernal pools you want to examine.
-You can select multiple locations to compare different pools.
+1. Click on the numbers to zoom into a cluster of pools
+2. Click directly on the marker for a list of individual pool characteristics
+3. For more information, click **"View Data Visualizations"** within the popup to be redirected to the data visualization tab.
 
-
-#### **Interact with the Map:**
-
-Click on a pool on the map to view detailed information about that specific pool, including:
-
-**Site Area | Pool Area | Pool Circumference | Restoration Year | Time Since Restoration | Period | Depth**
+<br>
