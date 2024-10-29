@@ -69,22 +69,6 @@ body <- dashboardBody(
             title = tagList(icon("tint"), strong("About the Data")),
             includeMarkdown("text/data.md")
         )
-      ),
-      fluidRow(
-        box(width = 12,
-            title = tagList(icon("tint"), strong("Plant Species List")),
-            dataTableOutput("species_list"),
-            collapsible = TRUE,
-            collapsed = TRUE
-        )
-      ),
-      fluidRow(
-        box(width = 12,
-            title = tagList(icon("tint"), strong("Invertebrate Species List")),
-            dataTableOutput("invert_species_list"),
-            collapsible = TRUE,
-            collapsed = TRUE
-        )
       )
     ),
     
@@ -98,15 +82,6 @@ body <- dashboardBody(
             leafletOutput("map")
         )
       ),
-      # fluidRow(
-      #   box(width = 12,
-      #       title = strong("Vernal Pool Interactive Map"),
-      #       fluidRow(
-      #         column(width = 12,
-      #                leafletOutput("map"))
-      #       )
-      #   )
-      # )
     ),
     
     # Data Visualization Tab ----
@@ -155,7 +130,7 @@ body <- dashboardBody(
               ),
               column(width = 6,
                      selectizeInput("tr_viz_quadrat", "Select Transect:",
-                                    choices = sort(unique(percent_cover$transect_axis)),
+                                    choices = sort(unique(percent_cover$vernal_pool_axis)),
                                     multiple = FALSE)
               ),
               column(width = 6,
@@ -190,7 +165,24 @@ body <- dashboardBody(
                              imageOutput("tr_spp_image"),
                              uiOutput("tr_spp_text")
             )
-        )
+        ), # END Additional info box
+        
+        box(width = 12,
+            title = strong("Species Lists"),
+            selectizeInput("list_location_pool_id",
+                           choices = sort(unique(percent_cover$location_pool_id)),
+                           label = "Select Location-Pool ID:"),
+            collapsed = FALSE,
+            collapsible = TRUE,
+            column(width = 6, 
+                   h4("Plant Species", style = "margin-bottom: 35px;"),
+                   dataTableOutput("plant_spp_list")),
+            column(width = 6,
+                   h4("Invertebrate Species", style = "margin-bottom: 35px;"),
+                   dataTableOutput("invert_spp_list"))
+            
+          
+        ) # END species list box
       )
     )
   )

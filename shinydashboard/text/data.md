@@ -6,7 +6,3 @@ Vernal pool vegetation is recorded annually in the spring.  For each pool, we la
 <br>
 
 Vernal pool hydrology is recorded weekly during the wet phase.  To measure hydrology, we installed 0.8m rulers in the deepest part of each pool and recorded the depth of the water in each pool every week.
-
-<br>
-
-**Click the + icon on the lists below to view a searchable data table of plant and invertebrate species recorded during the study**

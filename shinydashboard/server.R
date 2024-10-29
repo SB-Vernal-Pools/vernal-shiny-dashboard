@@ -1,36 +1,4 @@
 server <- function(input, output, session) {
-  # ==================================================================================
-  #                                species list                             ----
-  # ==================================================================================
-  
-  output$species_list <- renderDataTable({
-    percent_cover %>% 
-      select(species) %>% 
-      distinct() %>%
-      arrange(species) %>%
-      rename("Species" = species)
-  },
-  options = list(
-    searching = TRUE,
-    lengthChange = FALSE,
-    pageLength = 10))
-  
-  # ==================================================================================
-  #                                Invertebrate List                              ----
-  # ==================================================================================
-  
-  output$invert_species_list <- renderDataTable({
-    invert_species %>% 
-      select(order, family, genus, species) %>% 
-      distinct() %>%
-      arrange(species)
-  },
-  options = list(
-    searching = TRUE,
-    lengthChange = FALSE,
-    pageLength = 10, 
-    footer = FALSE))
-  
   
   # ==================================================================================
   #                                Vernal Pool Map                                ----
@@ -69,7 +37,7 @@ server <- function(input, output, session) {
                      "Period: %s<br>",
                      "Depth (cm): %.2f<br>",
                      "<a href='#' onclick='Shiny.setInputValue(\"goto_data\", \"%s\"); return false;'>",
-                     "View Data Visualizations</a>"),
+                     "View Additional Data </a>"),
                    
                    location_pool_id,
                    research_conducted_status,
@@ -82,7 +50,6 @@ server <- function(input, output, session) {
                    period,
                    round(depth_cm, 2),
                    location_pool_id) # END sprintf for pop-up
-                 
                  
       ) %>%
       
@@ -111,13 +78,17 @@ server <- function(input, output, session) {
   observeEvent(input$goto_data, {
     selected_pool(input$goto_data)  # Store the selected pool ID
     
-    # Update both inputs
+    # Update all 3 inputs
     updateSelectInput(session, 
                       "p_viz_location_pool_id", 
                       selected = input$goto_data)
     
     updateSelectInput(session, 
                       "tr_viz_location_pool_id", 
+                      selected = input$goto_data)
+    
+    updateSelectInput(session,
+                      "list_location_pool_id",
                       selected = input$goto_data)
     
     # Switch to data viz tab
@@ -179,7 +150,9 @@ server <- function(input, output, session) {
       theme(plot.title = element_text(size = 16, hjust = 0.5),
             axis.text.y = element_text(size = 9)) +
       #expand_limits(y = max(species_abundance$percent_cover) + 5) +
-      coord_flip()  
+      coord_flip()
+    
+    ggplotly(p)
     
   }) # END species abundance plot
   
@@ -193,7 +166,7 @@ server <- function(input, output, session) {
     
     filtered_species <- percent_cover %>% 
       filter(location_pool_id == input$tr_viz_location_pool_id &
-               transect_axis == input$tr_viz_quadrat)
+               vernal_pool_axis == input$tr_viz_quadrat)
     
     filtered_species <- sort(unique(filtered_species$species))
     
@@ -206,11 +179,11 @@ server <- function(input, output, session) {
   output$transect_level_viz <- renderPlotly({
     
     y_var <- switch(input$tr_viz_type,
-                    "Sum of Native Cover" = "sum_of_native_cover_automatically_calculated",
-                    "Count of Native Species" = "count_of_native_species_automatically_calculated",
-                    "Sum of Non-Native Cover" = "sum_of_non_native_cover_automatically_calculated",
-                    "Count of Non-Native Species" = "count_of_non_native_species_automatically_calculated",
-                    "Percent Thatch" = "percent_thatch",
+                    "Sum of Native Cover" = "sum_of_native_cover",
+                    "Count of Native Species" = "count_of_native_species",
+                    "Sum of Non-Native Cover" = "sum_of_non_native_cover",
+                    "Count of Non-Native Species" = "count_of_non_native_species",
+                    "Percent Thatch" = "percent_natural_thatch",
                     "Percent Bare Ground" = "percent_bare_ground",
                     "Percent Cover Single Species" = "percent_cover")
     
@@ -220,7 +193,7 @@ server <- function(input, output, session) {
       # Use reactive data frame for species filtering
       df <- percent_cover %>%
         filter(location_pool_id == input$tr_viz_location_pool_id &
-                 transect_axis == input$tr_viz_quadrat &
+                 vernal_pool_axis == input$tr_viz_quadrat &
                  species == input$tr_viz_species)
       
       tr_p <- ggplot(df, aes_string("transect_distance_of_quadrat", y_var)) +
@@ -235,7 +208,7 @@ server <- function(input, output, session) {
       
       df <- percent_cover %>%
         filter(location_pool_id == input$tr_viz_location_pool_id &
-                 transect_axis == input$tr_viz_quadrat)
+                 vernal_pool_axis == input$tr_viz_quadrat)
       
       tr_p <- ggplot(df, aes_string("transect_distance_of_quadrat", y_var)) +
         # geom_smooth(se=FALSE) +
@@ -263,7 +236,7 @@ server <- function(input, output, session) {
     
     df_single_spp <- percent_cover %>%
       filter(location_pool_id == input$tr_viz_location_pool_id &
-               transect_axis == input$tr_viz_quadrat &
+               vernal_pool_axis == input$tr_viz_quadrat &
                species == input$tr_viz_species)
     
     spp_link <- unique(df_single_spp$spp_cal_flora)
@@ -292,7 +265,39 @@ server <- function(input, output, session) {
          width = "80%",
          height = "95%",
          style="display: block; margin-left: auto; margin-right: auto;")
-  }, deleteFile = FALSE) 
+  }, deleteFile = FALSE)
+  
+  # ==================================================================================
+  #                            Invert & Plant Species List                        ----
+  # ==================================================================================
+  
+  # plant species list
+  output$plant_spp_list <- renderDataTable({
+    percent_cover %>% 
+      filter(location_pool_id == input$list_location_pool_id) %>% 
+      select(species, type) %>% 
+      distinct(species, .keep_all = TRUE) %>% 
+      arrange(species) %>% 
+      rename(Species = species,
+             Type = type)
+    
+  }) # END renderDataTable for plant list
   
   
-}
+  # invert species list
+  output$invert_spp_list <- renderDataTable({
+    invert_species %>% 
+      filter(location_pool_id == input$list_location_pool_id) %>% 
+      select(genus, species) %>% 
+      filter(!is.na(genus)) %>% # remove NA values
+      filter(!str_detect(genus, "\\?")) %>% # remove rows with question marks in genus
+      distinct(genus, species) %>% 
+      arrange(genus) %>% 
+      rename(Genus = genus,
+             Species = species)
+    
+  }) # END renderDataTable for invert list
+  
+  
+  
+} # END Server function
