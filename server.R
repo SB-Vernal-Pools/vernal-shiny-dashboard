@@ -37,7 +37,7 @@ server <- function(input, output, session) {
                      "Period: %s<br>",
                      "Depth (cm): %.2f<br>",
                      "<a href='#' onclick='Shiny.setInputValue(\"goto_data\", \"%s\"); return false;'>",
-                     "View Additional Data </a>"),
+                     "View Data Visualizations </a>"),
                    
                    location_pool_id,
                    research_conducted_status,

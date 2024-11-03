@@ -175,10 +175,10 @@ body <- dashboardBody(
             collapsed = FALSE,
             collapsible = TRUE,
             column(width = 6, 
-                   h4("Plant Species", style = "margin-bottom: 35px;"),
+                   h3("Plant Species", style = "margin-top: 1px; margin-bottom: 35px; margin-left: 215px;"),
                    dataTableOutput("plant_spp_list")),
             column(width = 6,
-                   h4("Invertebrate Species", style = "margin-bottom: 35px;"),
+                   h3("Invertebrate Species", style = "margin-top: 1px; margin-bottom: 35px; margin-left: 209px;"),
                    dataTableOutput("invert_spp_list"))
             
           
