@@ -19,10 +19,9 @@ library(tidylog)
 library(janitor)
 library(snakecase)
 
-## ==============================
-##         Compile CSS       ----
-## ==============================
-
+## =========================================================
+##                      Compile CSS                     ----
+## =========================================================
 sass(
   input = sass_file(here("www", "sass-styles.scss")),
   output = here("www", "sass-styles.css"),
@@ -106,3 +105,8 @@ vernal_polygon_abiotic <- vernal_polygon_abiotic %>%
 
 # calculate centroids for clustering map feature
 centroids <- st_centroid(vernal_polygon_abiotic)
+
+
+
+# load custom function
+source(here("data", "single_spp_gaps_function.R"))

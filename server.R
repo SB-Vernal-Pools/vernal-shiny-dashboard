@@ -194,12 +194,14 @@ server <- function(input, output, session) {
       df <- percent_cover %>%
         filter(location_pool_id == input$tr_viz_location_pool_id &
                  vernal_pool_axis == input$tr_viz_quadrat &
-                 species == input$tr_viz_species)
+                 species == input$tr_viz_species) %>% 
       
+      # use custom function to add 0s
+      fill_gaps()
+
       tr_p <- ggplot(df, aes_string("transect_distance_of_quadrat", y_var)) +
-        # geom_smooth(se=FALSE) +
         geom_line(alpha = 0.3, col = "blue") +
-        geom_point() +
+        geom_point(data = subset(df, get(y_var) > 0)) +
         theme_minimal() +
         labs(x = "Transect Distance of Quadrat",
              y = input$viz_plot_type)
@@ -211,7 +213,6 @@ server <- function(input, output, session) {
                  vernal_pool_axis == input$tr_viz_quadrat)
       
       tr_p <- ggplot(df, aes_string("transect_distance_of_quadrat", y_var)) +
-        # geom_smooth(se=FALSE) +
         geom_line(alpha = 0.3, col = "blue") +
         geom_point() +
         theme_minimal() +
