@@ -17,10 +17,17 @@ server <- function(input, output, session) {
   # Leaflet output
   output$map <- renderLeaflet({
     leaflet(vernal_map_data) %>%
-      addProviderTiles(providers$CartoDB) %>%
+      
+      # load both basemaps
+      addProviderTiles(providers$CartoDB.Positron,
+                       group = "OpenStreetMap") %>%
+      addProviderTiles(providers$Esri.WorldImagery,
+                       group = "Satellite") %>%
+      
+      # set default zoom/area for map 
       setView(lng = -119.8489, lat = 34.4140, zoom = 13) %>%
       
-      #add clustering and labels
+      #add clustering and markers with labels
       addMarkers(data = centroids,
                  clusterOptions = markerClusterOptions(), # this ENABLES the marker plugin
                  popup = ~sprintf(
@@ -53,7 +60,7 @@ server <- function(input, output, session) {
                  
       ) %>%
       
-      # add pool polygons/geometries
+      # add vernal pool polygons/geometries
       addPolygons(stroke = FALSE,
                   color = ~factpal(research_conducted_status),
                   weight = 1,
@@ -65,7 +72,13 @@ server <- function(input, output, session) {
       addLegend(position = 'bottomright',
                 pal = factpal,
                 values = c('Active Monitoring', "Non-Active Monitoring"),
-                labels = c('Active Monitoring', "Non-Active Monitoring"))
+                labels = c('Active Monitoring', "Non-Active Monitoring")) %>% 
+      
+      # add toggle for basemaps loaded in "addProviderTiles"
+      addLayersControl(
+        baseGroups = c("OpenStreetMap", "Satellite"),
+        position = "topright",
+        options = layersControlOptions(collapsed = FALSE))
     
   }) #END renderLeaflet 
   
@@ -195,10 +208,10 @@ server <- function(input, output, session) {
         filter(location_pool_id == input$tr_viz_location_pool_id &
                  vernal_pool_axis == input$tr_viz_quadrat &
                  species == input$tr_viz_species) %>% 
+        
+        # use custom function to add 0s
+        fill_gaps()
       
-      # use custom function to add 0s
-      fill_gaps()
-
       tr_p <- ggplot(df, aes_string("transect_distance_of_quadrat", y_var)) +
         geom_line(alpha = 0.3, col = "blue") +
         geom_point(data = subset(df, get(y_var) > 0)) +
