@@ -19,11 +19,11 @@ server <- function(input, output, session) {
     leaflet(vernal_map_data) %>%
       
       # load both basemaps
-      addProviderTiles(providers$CartoDB.Positron,
-                       group = "OpenStreetMap") %>%
       addProviderTiles(providers$Esri.WorldImagery,
                        group = "Satellite") %>%
-      
+      addProviderTiles(providers$CartoDB.Positron,
+                       group = "OpenStreetMap") %>%
+
       # set default zoom/area for map 
       setView(lng = -119.8489, lat = 34.4140, zoom = 13) %>%
       
@@ -76,7 +76,7 @@ server <- function(input, output, session) {
       
       # add toggle for basemaps loaded in "addProviderTiles"
       addLayersControl(
-        baseGroups = c("OpenStreetMap", "Satellite"),
+        baseGroups = c("Satellite", "OpenStreetMap"),
         position = "topright",
         options = layersControlOptions(collapsed = FALSE))
     
