@@ -29,7 +29,6 @@ server <- function(input, output, session) {
       
       #add clustering and markers with labels
       addMarkers(data = centroids,
-                 clusterOptions = markerClusterOptions(), # this ENABLES the marker plugin
                  popup = ~sprintf(
                    
                    paste0(
